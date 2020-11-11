@@ -4,7 +4,7 @@
 	"delimiter":";",
 	"timezoneoffset":"-18000",
 	"prefix":"!",
-	"version":"0.0.2",
+	"version":"1.2",
 	"description":"Timetracker discord bot made by HerbeMalveillante, V.",
 	"token":"PASTE TOKEN HERE",
 	"botActivity":"TimeTracker V.",
