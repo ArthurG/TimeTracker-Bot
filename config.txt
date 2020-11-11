@@ -1,0 +1,13 @@
+{
+	"sheetName":"PASTE SHEET NAME HERE",
+	"filename":"activity.csv",
+	"delimiter":";",
+	"timezoneoffset":"-18000",
+	"prefix":"!",
+	"version":"0.0.2",
+	"description":"Timetracker discord bot made by HerbeMalveillante, V.",
+	"token":"PASTE TOKEN HERE",
+	"botActivity":"TimeTracker V.",
+	"color":"16777215"
+
+}
