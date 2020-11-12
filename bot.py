@@ -18,6 +18,16 @@ with open('config.txt') as json_file:
     token = data['token'] # token of the bot
     botActivity = data['botActivity'] + version
     colour = int(data['color'])
+    timezoneoffset = int(data['timezoneoffset']) # time offset (difference in second to greenwich time/GMT)
+    timeout = float(data['timeout'])
+
+#calculates the hour display based on the timezone :
+hourout = timezoneoffset/3600
+if hourout < 0 :
+    stringTimeOffset = str(hourout)
+else :
+    stringTimeOffset = str(f"+{hourout}")
+
 
 bot = commands.Bot(command_prefix=commands.when_mentioned_or(prefix), description=description)
 bot.remove_command('help')
@@ -86,16 +96,16 @@ async def activity(ctx, *, activityText = None):
     activityObj = Activity(epoch[0], epoch[1], epoch[2])
     id = activityObj.id
 
-    embed = discord.Embed(title = ":art: Activity added !", description = "Click on the reaction to cancel :put_litter_in_its_place:", colour = colour, timestamp = datetime.datetime.utcnow())
+    embed = discord.Embed(title = ":art: Activity added !", description = f"Click on the reaction within {timeout}s to cancel :put_litter_in_its_place:", colour = colour, timestamp = datetime.datetime.utcnow())
     embed.add_field(name = ":label: Label :", value = f"`{activityObj.label}`", inline = False)
     try :
-        datestartGMT = datetime.datetime.utcfromtimestamp(activityObj.startDate)
-        dateendGMT = datetime.datetime.utcfromtimestamp(activityObj.endDate)
+        datestartGMT = datetime.datetime.utcfromtimestamp(activityObj.startDate + timezoneoffset)
+        dateendGMT = datetime.datetime.utcfromtimestamp(activityObj.endDate + timezoneoffset)
     except :
         datestartGMT = "Error !"
         dateendGMT = "Error !"
-    embed.add_field(name = ":hourglass_flowing_sand: Start time :", value = f"`{activityObj.startDate}` ({datestartGMT} GMT)", inline = False)
-    embed.add_field(name = ":hourglass: End time : ", value = f"`{activityObj.endDate}` ({dateendGMT} GMT)", inline = False)
+    embed.add_field(name = ":hourglass_flowing_sand: Start time :", value = f"`{activityObj.startDate}` ({datestartGMT} GMT{stringTimeOffset})", inline = False)
+    embed.add_field(name = ":hourglass: End time : ", value = f"`{activityObj.endDate}` ({dateendGMT} GMT{stringTimeOffset})", inline = False)
     embed.add_field(name = ":floppy_disk: Id : ", value = f"`{activityObj.id}`", inline = False)
     embed.set_thumbnail(url=bot.user.avatar_url)
     embed.set_footer(text = bot.user.name + " - requested by "+str(ctx.author), icon_url=ctx.author.avatar_url)
@@ -110,7 +120,7 @@ async def activity(ctx, *, activityText = None):
     def check(r,u):
         return u.id == ctx.author.id and r.message.channel.id == ctx.channel.id and str(r.emoji) == "🚮"
     try :
-        reaction, user = await bot.wait_for("reaction_add", check = check, timeout = 60.0)
+        reaction, user = await bot.wait_for("reaction_add", check = check, timeout = timeout)
     except asyncio.TimeoutError :
         log(f"The delay to delete the activity of ID {id} has expired")
         return
@@ -128,4 +138,4 @@ async def activity(ctx, *, activityText = None):
 
 
 bot.run(token) # Any line below this will run if the bot crashes completely (very unlikely to happen but still).
-log("Oops, the bot crahsed... Discord servers may have issues right now.")
+log("Oops, the bot crashed... Discord servers may have issues right now.")

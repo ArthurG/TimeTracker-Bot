@@ -47,15 +47,6 @@ class Activity:
         self.id = str(uuid.uuid4()) #uuid4 is an unpredictable unique number. Creating 1 billion uuid4 keys per second for the next 100 years will result on a 50% chance of having a duplicate. Storing all those keys would take 256 000 petabytes of storage.
 
 
-def printActivity(activity):
-    "prints all the attributs of an activity."
-    log("Here are the attributs of the activity :")
-    print(f"startDate : {activity.startDate}")
-    print(f"endDate : {activity.endDate}")
-    print(f"dateCreated : {activity.dateCreated}")
-    print(f"label : {activity.label}")
-    print(f"id : {activity.id}")
-
 def saveToCsv():
     "saves the spreadsheet to csv format"
     # creating csv file from the google spreadsheet
