@@ -8,6 +8,7 @@
 	"description":"Timetracker discord bot made by HerbeMalveillante, V.",
 	"token":"PASTE TOKEN HERE",
 	"botActivity":"TimeTracker V.",
-	"color":"16777215"
+	"color":"16777215",
+	"timeout":"60.0"
 
 }
