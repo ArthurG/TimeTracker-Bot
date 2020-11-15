@@ -4,6 +4,7 @@ import uuid # to generate unique ids
 import csv # default python library to navigate csv files
 import calendar #to manage timezones
 import json
+import pytz #to manage timezones #2
 
 import gspread # to edit google sheets files
 from oauth2client.service_account import ServiceAccountCredentials # secured connection to the google drive API
@@ -135,6 +136,9 @@ def analyzeUserEntry(entry):
         formattedDate.append([monthNumber,int(day)])
 
 
+    #Calculating the local date :
+    tz = pytz.timezone("EST") # this will need to be loaded from the config file
+
     # Starting the three methods :
 
     if len(formattedHours) == 2 and len(formattedDate) == 0 : # method 1
@@ -147,11 +151,12 @@ def analyzeUserEntry(entry):
 
         offset = 0
         if yersteday == True :
-            offset = 86400
+            offset += 86400
 
-        datestart = datetime.datetime(datetime.datetime.utcnow().year, datetime.datetime.utcnow().month, datetime.datetime.utcnow().day, formattedHours[0][0], formattedHours[0][1])
+
+        datestart = datetime.datetime(datetime.datetime.now(tz).year, datetime.datetime.now(tz).month, datetime.datetime.now(tz).day, formattedHours[0][0], formattedHours[0][1])
         timestampstart = calendar.timegm(datestart.utctimetuple()) - timezoneoffset  - offset
-        dateend = datetime.datetime(datetime.datetime.utcnow().year, datetime.datetime.utcnow().month, datetime.datetime.utcnow().day, formattedHours[1][0], formattedHours[1][1])
+        dateend = datetime.datetime(datetime.datetime.now(tz).year, datetime.datetime.now(tz).month, datetime.datetime.now(tz).day, formattedHours[1][0], formattedHours[1][1])
         timestampend = calendar.timegm(dateend.utctimetuple()) - timezoneoffset
         #done
 
@@ -166,10 +171,13 @@ def analyzeUserEntry(entry):
 
 
     elif len(formattedHours) == 2 and len(formattedDate) == 2 : # method 2
-        datestart = datetime.datetime(datetime.datetime.utcnow().year, formattedDate[0][0], formattedDate[0][1], formattedHours[0][0], formattedHours[0][1])
+
+
+
+        datestart = datetime.datetime(datetime.datetime.now(tz).year, formattedDate[0][0], formattedDate[0][1], formattedHours[0][0], formattedHours[0][1])
         timestampstart = calendar.timegm(datestart.utctimetuple()) - timezoneoffset
 
-        dateend = datetime.datetime(datetime.datetime.utcnow().year, formattedDate[1][0], formattedDate[1][1], formattedHours[1][0], formattedHours[1][1])
+        dateend = datetime.datetime(datetime.datetime.now(tz).year, formattedDate[1][0], formattedDate[1][1], formattedHours[1][0], formattedHours[1][1])
         timestampend = calendar.timegm(dateend.utctimetuple()) - timezoneoffset
 
         #done
@@ -186,7 +194,7 @@ def analyzeUserEntry(entry):
 
         timestampstart = getLastEndTime()
 
-        dateend = datetime.datetime(datetime.datetime.utcnow().year, datetime.datetime.utcnow().month, datetime.datetime.utcnow().day, formattedHours[0][0], formattedHours[0][1])
+        dateend = datetime.datetime(datetime.datetime.now(tz).year, datetime.datetime.now(tz).month, datetime.datetime.now(tz).day, formattedHours[0][0], formattedHours[0][1])
         timestampend = calendar.timegm(dateend.utctimetuple()) - timezoneoffset
 
         #done
