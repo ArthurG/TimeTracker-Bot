@@ -51,7 +51,7 @@ class Activity:
 def saveToCsv():
     "saves the spreadsheet to csv format"
     # creating csv file from the google spreadsheet
-    with open(filename, 'w') as f:
+    with open(filename, 'w', newline='', encoding="utf-8") as f:
         writer = csv.writer(f, delimiter = delimiter)
         writer.writerows(sheet.get_all_values())
 
@@ -103,7 +103,8 @@ def analyzeUserEntry(entry):
             timeIndicators.append(i)
         else :
             for j in monthList :
-                if j in i.lower() :
+                if i.lower().startswith(j):
+                #if j in i.lower() :
                     dateIndicators.append(i)
 
     formattedHours = [] # formatting the hours
@@ -129,15 +130,34 @@ def analyzeUserEntry(entry):
 
     formattedDate = [] #formatting the date
 
+    badMonths = []
     for i in range(len(dateIndicators)):
+
+
         month = dateIndicators[i][:3]
         monthNumber = monthList.index(month.lower())+1
         day = dateIndicators[i][3:]
-        formattedDate.append([monthNumber,int(day)])
+        try:
+            formattedDate.append([monthNumber,int(day)])
+        except :
+            badMonths.append(dateIndicators[i])
 
 
+
+    for i in badMonths:
+
+        dateIndicators.pop(dateIndicators.index(i))
+        #print(dateIndicators.pop(i))
+
+
+    hoursoffset = int(timezoneoffset/3600)
     #Calculating the local date :
-    tz = pytz.timezone("EST") # this will need to be loaded from the config file
+    if hoursoffset > 0:
+        hoursoffset = "+"+str(hoursoffset)
+    try :
+        tz = pytz.timezone(f"Etc/GMT{hoursoffset}") # this will need to be loaded from the config file
+    except :
+        print("IMPORTANT WARNING : THE TIMEZONE YOU SELECTED DOES NOT EXISTS IN THE PYTZ DATABASE. PLEASE CHECK THAT YOU ENTERED YOUR TIMEZONE CORRECTLY")
 
     # Starting the three methods :
 
