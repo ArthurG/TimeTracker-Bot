@@ -7,13 +7,13 @@ import json
 
 import datetime # time parser
 
+version = "1.3"
 
 with open('config.txt') as json_file:
     data = json.load(json_file)
 
 
     prefix = data['prefix']
-    version = data['version']
     description = data['description'] + version
     token = data['token'] # token of the bot
     botActivity = data['botActivity'] + version
@@ -40,6 +40,7 @@ bot.remove_command('help')
 
 @bot.event # when the bot is connected and ready to run commands.
 async def on_ready():
+    print(f"Timetracker bot version {version}")
     print('Logged in successfully !')
     print(f"Bot username : {bot.user.name}")
     print(f"Bot id : {bot.user.id}")
