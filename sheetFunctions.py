@@ -14,7 +14,7 @@ with open('config.txt') as json_file:
     data = json.load(json_file)
 
 
-
+    timezoneName = data["timezone"]
     sheetName = data['sheetName'] # name of the document to process. Create it
                               # with your google account and share it with this
                               # gmail user : timetracker@discord-timetracker.iam.gserviceaccount.com
@@ -149,15 +149,7 @@ def analyzeUserEntry(entry):
         dateIndicators.pop(dateIndicators.index(i))
         #print(dateIndicators.pop(i))
 
-
-    hoursoffset = int(timezoneoffset/3600)
-    #Calculating the local date :
-    if hoursoffset > 0:
-        hoursoffset = "+"+str(hoursoffset)
-    try :
-        tz = pytz.timezone(f"Etc/GMT{hoursoffset}") # this will need to be loaded from the config file
-    except :
-        print("IMPORTANT WARNING : THE TIMEZONE YOU SELECTED DOES NOT EXISTS IN THE PYTZ DATABASE. PLEASE CHECK THAT YOU ENTERED YOUR TIMEZONE CORRECTLY")
+    tz = pytz.timezone(timezoneName) # EST TIME -> changeable in the config file
 
     # Starting the three methods :
 
