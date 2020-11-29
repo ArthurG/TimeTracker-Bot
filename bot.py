@@ -1,10 +1,10 @@
 from sheetFunctions import *  # calls all the functions I coded to access and modify the spreadsheet.
+from barplot import *
 
 import discord  # for discord API access
 from discord.ext import commands
 import asyncio
 import json
-import tempfile
 from io import BytesIO
 
 import datetime  # time parser
@@ -144,7 +144,7 @@ async def activitylist(ctx, days=7):
 
     stringActTime = ""
     for i in range(len(activitytime)):
-        stringActTime += str(i+1)+ " : " + activitytime[i][0] + " - " + secondConverter(activitytime[i][1]) + "\n"
+        stringActTime += str(i+1) + " : " + activitytime[i][0] + " - " + secondConverter(activitytime[i][1]) + "\n"
 
     buffer = BytesIO(stringActTime.encode("utf8"))
 
@@ -169,10 +169,48 @@ async def activitylist(ctx, days=7):
     else:
         if str(reaction.emoji == "📁"):
 
+            return await ctx.send("", file=discord.File(fp=buffer, filename="activitylist.txt"))
 
 
-            return await ctx.send("", file = discord.File(fp=buffer, filename="activitylist.txt"))
+@bot.command(name="trend", aliases=["t", "tr", "Trend", "activitytrend", "trendlist"])
+async def trend(ctx, days=7):
+    comparison = sheetTrend(days)
 
+    embed = discord.Embed(title=f"Trend list for the past {days} days :", description="the 15 activities with the biggest difference between two periods are displayed. Click on the reaction to get a file with the complete list.", colour=colour, timestamp=datetime.datetime.utcnow())
+
+    stringComparison = ""
+    for i in range(len(comparison)):
+        stringComparison += str(i+1) + " : " + comparison[i][0] + " - " + secondConverter(comparison[i][1]) + "\n"
+    buffer = BytesIO(stringComparison.encode("utf8"))
+
+    for i in range(len(comparison)):
+        if i < 15:
+            stringDesc = ""
+            stringDesc += f"difference : `{secondConverter(comparison[i][1])}`"
+            embed.add_field(name=f"{i+1} - {comparison[i][0]}", value=stringDesc, inline=False)
+    embed.set_thumbnail(url=bot.user.avatar_url)
+    embed.set_footer(text=bot.user.name + " - requested by "+str(ctx.author), icon_url=ctx.author.avatar_url)
+
+    message = await ctx.send(embed=embed)
+
+    await message.add_reaction("📁")
+    def check(r, u):
+        return u.id == ctx.author.id and r.message.channel.id == ctx.channel.id and str(r.emoji) == "📁"
+    try:
+        reaction, user = await bot.wait_for("reaction_add", check=check, timeout=timeout)
+    except asyncio.TimeoutError:
+        log("The delay to download the file has expired")
+        return
+    else:
+        if str(reaction.emoji == "📁"):
+            return await ctx.send("", file=discord.File(fp=buffer, filename="trend.txt"))
+
+
+@bot.command(name="calendarWeek", aliases=["cal", "cw", "cW", "c"])
+async def calendarWeek(ctx):
+    firstmessage = await ctx.send("Generating week calendar, please wait a few seconds...")
+    await ctx.send("", file=discord.File(fp="fig.jpg"))
+    await firstmessage.delete()
 
 bot.run(token)  # Any line below this will run if the bot crashes completely (very unlikely to happen but still).
 log("Oops, the bot crashed... Discord servers may have issues right now.")

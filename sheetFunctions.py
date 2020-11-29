@@ -261,11 +261,79 @@ def activitiesList(days):
 
 
 def secondConverter(seconds):
+
+    sign = ""
+    if seconds < 0:
+        seconds = seconds*-1
+        sign = "-"
+
     d = seconds // 86400
     h = (seconds - d*86400) // 3600
     m = (seconds - d*86400 - h*3600) // 60
     s = seconds - d*86400 - h*3600 - m*60
-    string = f"{d}d{h}h{m}m{s}s"
+    string = f"{sign}{d}d{h}h{m}m{s}s"
     return string
 
-print(secondConverter(5400))
+
+def sheetTrend(days):
+    dateUTCNow = datetime.datetime.utcnow()
+    timestampNow = calendar.timegm(dateUTCNow.utctimetuple())  # this is the actual timestamp, completely timezone independant
+    timestampStart = timestampNow - days*86400  # this is the timestamp corresponding to x days ago
+
+    timestampOld = timestampStart - days*86400  # this is the timestamp corresponding to 2*x days ago.
+
+    # we now need to extract the activities and sort them by if they are
+    # between timestampStart and timestampOld, or if they are between
+    # timestampStart and timestampNow
+
+    # sheet.get_all_values() returns a list of list. We need to iterate it from the end.
+    period1 = []  # first period (from 2*x days ago to x days ago)
+    period2 = []  # second period (from x days ago to today)
+    values = sheet.get_all_values()
+
+    for i in range(len(values)):
+
+        activity = values[-(i+1)]
+
+        # print(activity)
+        try:
+            if int(activity[3]) >= timestampOld and int(activity[3]) < timestampStart:
+                period1.append(activity)
+            elif int(activity[3]) >= timestampStart and int(activity[3]) < timestampNow:
+                period2.append(activity)
+            else:
+                break
+
+        except ValueError:  # first line
+            pass
+
+    uniqueValuesP1 = {}
+    for i in period1:
+        timespent = int(i[2]) - int(i[1])
+        if i[0] in uniqueValuesP1:
+            uniqueValuesP1[i[0]] += timespent
+        else:
+            uniqueValuesP1[i[0]] = timespent
+    uniqueValuesP2 = {}
+    for i in period2:
+        timespent = int(i[2]) - int(i[1])
+        if i[0] in uniqueValuesP2:
+            uniqueValuesP2[i[0]] += timespent
+        else:
+            uniqueValuesP2[i[0]] = timespent
+
+    # now every value is unique in each dico.
+    # we need to compare the time spend between period 1 and period 2
+
+    comparison = {}
+
+    for i in uniqueValuesP1:
+        if i in uniqueValuesP2:
+            comparison[i] = uniqueValuesP2[i] - uniqueValuesP1[i]
+
+    sorted_comparison = sorted(comparison.items(), key=operator.itemgetter(1))
+    sorted_comparison.reverse()
+    # comparison contains everything we need now.
+
+    print(sorted_comparison)
+    return sorted_comparison
