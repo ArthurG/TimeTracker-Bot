@@ -209,6 +209,7 @@ async def trend(ctx, days=7):
 @bot.command(name="calendarWeek", aliases=["cal", "cw", "cW", "c"])
 async def calendarWeek(ctx):
     firstmessage = await ctx.send("Generating week calendar, please wait a few seconds...")
+    getCalendarBuffer()
     await ctx.send("", file=discord.File(fp="fig.jpg"))
     await firstmessage.delete()
 
