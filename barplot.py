@@ -19,6 +19,7 @@ with open('config.txt') as json_file:
 
     timezoneName = data["timezone"]
     timezoneoffset = int(data['timezoneoffset'])
+    delimiter = data['delimiter']
 
 tz = pytz.timezone(timezoneName)
 
@@ -29,7 +30,7 @@ def getCalendarBuffer():
 
     data = []
     with open("activity.csv") as csvfile:
-        reader = list(csv.reader(csvfile, delimiter=";"))
+        reader = list(csv.reader(csvfile, delimiter=delimiter))
         for row in range(len(reader)):
             if row != 0:
 
