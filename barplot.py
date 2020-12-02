@@ -122,7 +122,7 @@ def getCalendarBuffer():
         # x = random.random()/5
         # if random.randint(0, 1) == 0:
         #    x = -x
-        plt.text(start_date+.003, day_num-.2, task, color="black", horizontalalignment="left", wrap=True)
+        plt.text(start_date+.006, day_num-.2, task, color="black", horizontalalignment="left", wrap=True, rotation=35)
 
 
     # Create legend based on activites
