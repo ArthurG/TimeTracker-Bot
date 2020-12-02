@@ -1,13 +1,14 @@
 # https://stackoverflow.com/questions/62376753/how-would-i-create-a-bar-plot-with-multiple-start-and-end-points-on-a-single-dat
 
-import random
+# import random
 import numpy as np
 import datetime as dt
+# import calendar as cal
 
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib.collections import PolyCollection
-import matplotlib.patches as mpatches
+# import matplotlib.patches as mpatches
 
 import csv
 import json
@@ -57,13 +58,26 @@ def getCalendarBuffer():
         if datetimeStart.day == datetimeEnd.day:  # the activity occur on one full day
             newdata.append([entry[0], str(datetimeStart)[:-3], str(datetimeEnd)[:-3]])
         else:  # the activity is cross day
-            print(f"COULD NOT DISPLAY THE ACTIVITY {entry[0]} as it is crossday")
+            # splitting the activity in two parts : the first part is the first day and the second is the second day.
+            datetimeStart2 = dt.datetime((datetimeStart+dt.timedelta(days=1)).year, (datetimeStart+dt.timedelta(days=1)).month, (datetimeStart+dt.timedelta(days=1)).day, 00, 00)
+            datetimeEnd1 = dt.datetime(datetimeStart.year, datetimeStart.month, datetimeStart.day, 23, 59)
+
+            print(f"SPLITTING THE ACTIVITY {entry[0]} as it is crossday")
+            print(f"{datetimeStart} -> {datetimeEnd1} | {datetimeStart2} -> {datetimeEnd}")
+
+            strdatetimeStart1 = str(datetimeStart)[:-3]
+            strdatetimeStart2 = str(datetimeStart2)[:-3]
+            strdateEnd1 = str(datetimeEnd1)[:-3]
+            strdateEnd2 = str(datetimeEnd)[:-3]
+
+            newdata.append([entry[0], strdatetimeStart1, strdateEnd1])
+            newdata.append([entry[0], strdatetimeStart2, strdateEnd2])
+            # cal.timegm(datetimeStart.utctimetuple())-timezoneoffset}")
+
 
         # check if the start day is the same than the end day
 
     print("\n")
-
-
 
     data = np.array(newdata)[:, :]  # converting to a numpy array
 
@@ -123,7 +137,6 @@ def getCalendarBuffer():
         # if random.randint(0, 1) == 0:
         #    x = -x
         plt.text(start_date+.006, day_num-.2, task, color="black", horizontalalignment="left", wrap=True, rotation=35)
-
 
     # Create legend based on activites
     # plt.legend(handles=[mpatches.Patch(color=color, label=client)
