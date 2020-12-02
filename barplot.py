@@ -117,11 +117,13 @@ def getCalendarBuffer():
     ax.set_yticks(range(1, len(days_list) + 1))
     ax.set_yticklabels(days_list)
 
+    # add task text to plot
     for (start_date, day_num, task) in texts:
         # x = random.random()/5
         # if random.randint(0, 1) == 0:
         #    x = -x
-        plt.text(start_date+.003, day_num-.03, task, color="black")
+        plt.text(start_date+.003, day_num-.2, task, color="black", horizontalalignment="left", wrap=True)
+
 
     # Create legend based on activites
     # plt.legend(handles=[mpatches.Patch(color=color, label=client)
