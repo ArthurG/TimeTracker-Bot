@@ -119,7 +119,7 @@ async def activity(ctx, *, activityText=None):
     # message = await ctx.send("Hello, please click the reaction within 60 seconds")
     await message.add_reaction("🚮")
     def check(r,u):
-        return u.id == ctx.author.id and (not u.bot) and r.message == message and r.message.channel.id == ctx.channel.id and str(r.emoji) == "🚮"
+        return u.id == ctx.author.id and (not u.bot) and r.message.id == message.id and r.message.channel.id == ctx.channel.id and str(r.emoji) == "🚮"
     try:
         reaction, user = await bot.wait_for("reaction_add", check=check, timeout=timeout)
     except asyncio.TimeoutError:
